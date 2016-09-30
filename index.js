@@ -1,43 +1,180 @@
 var express = require('express');
+var bodyParser = require('body-parser');
+var MongoClient = require('mongodb').MongoClient, assert = require('assert');
+var ObjectId = require('mongodb').ObjectID;
 var app = express();
-var expressHbs = require('express-handlebars');
 
-app.engine('hbs', expressHbs({extname:'hbs', defaultLayout:'main.hbs'}));
-app.set('view engine', 'hbs');
+app.use(bodyParser.json())
+app.use(bodyParser.urlencoded({extended: false}))
 
-app.get('/', function(req, res){
-  res.render('home');
+var url = 'mongodb://localhost:27017/myproject';
+var db;
+
+MongoClient.connect(url, (err, database) => {
+  if (err) return console.log(err)
+    db = database
+    app.listen(process.env.PORT || 3000, () => {
+      console.log('listening on 3000')
+    });
 });
 
-app.get('/simple', function(req, res){
-  var data = {name: 'Gorilla'};
-  res.render('simple', data);
-});
+// app.get('/hardware/random', function(req, res) {
+//   var id = Math.floor(Math.random() * hardware.length);
+//   var q = hardware[id];
+//   res.json(q);
+// });
 
-var body = { "hardware":{
-  "dev_kits" : {
-    1 : {
-      "quantity" : 10,
-      "type" : "Arduino"
-    },
-    2 : {
-      "quantity" : 20,
-      "type" : "Freedom Board"
+// HARDWARE (ALL) END POINT
+// Get all hardware, available or not
+
+app.route('/hardware')
+  .get(function(req, res) {
+    console.log(req.query.status)
+    if(req.query.status == 'true') {
+      console.log('trigger')
+      db.collection('hardware').find({status : true}).toArray(function(err, docs) {
+        res.send(docs)
+      });
     }
+    else if(req.query.status == 'false'){
+      db.collection('hardware').find({status : false}).toArray(function(err, docs) {
+        res.send(docs)
+      });
+    }
+    else {
+      db.collection('hardware').find({}).toArray(function(err, docs) {
+        res.send(docs)
+      });
+    }
+  })
+  .post(function(req, res) {
+    if(!req.body.hasOwnProperty('name') || !req.body.hasOwnProperty('type')) {
+      res.statusCode = 400;
+      return res.send('ERROR 400 - Post syntax incorrect.');
+    }
+
+    var newHardware = {
+      name : req.body.name,
+      type : req.body.type,
+      status : false,
+      studentId : null,
+      studentEmail : null,
+      dateLoaned : null
+    };
+
+    db.collection('hardware').insert(newHardware, {w:1}, function(err, result) {});
+    console.log("Successfully added hardware ")
+    res.statusCode = 200;
+    res.send("HTTP 200 - Successful");
+  });
+
+// ID END POINT
+// Get specific item in the hardware store
+
+app.route('/hardware/:id')
+  .get(function(req, res) {
+    if(req.params.id < 0) {
+      res.statusCode = 404;
+      return res.send('ERROR 404 - No id referenced');
+    }
+    console.log(req.params.id)
+
+    db.collection('hardware').findOne({'_id': new ObjectId(req.params.id)}, function(err, item) {
+      if(item == null){
+        res.statusCode = 404;
+        return res.send('ERROR 404 - No hardware found in db');
+      };
+      res.send(item);
+      console.log(item)
+    });
+  })
+  .delete(function(req, res) {
+    if(req.params.id == null) {
+      res.statusCode = 404;
+      return res.send('Error 404 - No hardware found');
+    }
+
+    db.collection('hardware').deleteOne({'_id': new ObjectId(req.params.id)}, function(err, result) {
+      res.statusCode = 200;
+      return res.send('HTTP 200 - Hardware ' + req.params.id + ' removed');
+    });
+  });
+
+// NAME END POINT
+// Check how many of a specific hardware that we have in total
+
+app.get('/hardware/name/:name', function(req, res) {
+  if(req.params.name == null) {
+    res.statusCode = 404;
+    return res.send('ERROR 404 - No items referenced');
   }
-}}
+  console.log(req.params.name)
 
-app.get('/api', function(req, res){
-  res.json(
-    body
-  )
-})
+  db.collection('hardware').find({'name': req.params.name}).count(function(err, total) {
+    if(total == 0){
+      res.statusCode = 404;
+      return res.send('ERROR 404 - No hardware found in db');
+    };
+    console.log(total)
+    res.json(total)
+  });
+});
 
-app.put('/api', function(req,res){
-  req.json(
+// STATUS END POINT
+// Check if a device is currently being borrowed
 
-  )
+app.route('/hardware/status/:id')
+  .get(function(req, res) {
+    if(req.params.id < 0) {
+      res.statusCode = 404;
+      return res.send('ERROR 400 - No id referenced');
+    }
+    console.log(req.params.id)
 
-})
+    db.collection('hardware').findOne({'_id': new ObjectId(req.params.id)}, function(err, item) {
+      if(item == null){
+        res.statusCode = 400;
+        return res.send('ERROR 400 - No hardware found in db');
+      };
+      res.send(item.status);
+      console.log(item)
+    });
+  })
 
-app.listen(3000);
+  .put(function(req, res){
+    if(req.params.id < 0 || req.query.status == null) {
+      res.statusCode = 400;
+      return res.send('ERROR 400 - id or status not referenced');
+    }
+
+    console.log("Something happened at " + req.params.id + " " + req.query.status)
+
+    var isTrueSet = (req.query.status === 'true'); // Defaults to false if incorrect value pushed
+    var emailStudent;
+    var idStudent;
+    var dateLoaned = new Date();
+
+    if(isTrueSet == true){
+      try {
+        emailStudent = req.query.studentEmail;
+        idStudent = req.query.studentId;
+      }
+      catch(err){
+        res.statusCode = 400;
+        return res.send('ERROR 400 - Incorrect Syntax: Missing email and/or id');
+      }
+    }
+    else if(isTrueSet == false){
+      emailStudent = null;
+      idStudent = null;
+      dateLoaned = null;
+    };
+
+    db.collection('hardware').findAndModify({'_id': new ObjectId(req.params.id)}, [], { $set: {"status": isTrueSet, "studentId": emailStudent, "studentEmail": idStudent, "dateLoaned": dateLoaned} }, { new : true}, function(err, item) {
+      if(item == null){
+        res.statusCode = 404;
+        return res.send('ERROR 404 - No hardware with id found in db');
+      };
+      res.send(item);
+    });
+  })
