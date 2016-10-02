@@ -142,22 +142,22 @@ app.route('/hardware/status/:id')
   })
 
   .put(function(req, res){
-    if(req.params.id < 0 || req.query.status == null) {
+    if(req.params.id < 0 || req.body == null) {
       res.statusCode = 400;
       return res.send('ERROR 400 - id or status not referenced');
     }
 
-    console.log("Something happened at " + req.params.id + " " + req.query.status)
+    console.log(req.body.status)
 
-    var isTrueSet = (req.query.status === 'true'); // Defaults to false if incorrect value pushed
+    var isTrueSet = (req.body.status === 'true'); // Defaults to false if incorrect value pushed
     var emailStudent;
     var idStudent;
     var dateLoaned = new Date();
 
     if(isTrueSet == true){
       try {
-        emailStudent = req.query.studentEmail;
-        idStudent = req.query.studentId;
+        emailStudent = req.body.studentEmail;
+        idStudent = req.body.studentId;
       }
       catch(err){
         res.statusCode = 400;
