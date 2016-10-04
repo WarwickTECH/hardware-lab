@@ -1,14 +1,25 @@
 var express = require('express');
+var exphbs = require('express-handlebars');
 var bodyParser = require('body-parser');
+var path = require('path');
 var MongoClient = require('mongodb').MongoClient, assert = require('assert');
 var ObjectId = require('mongodb').ObjectID;
 var app = express();
+
+app.use(express.static(path.join(__dirname, 'public')));
+
+app.set('views', __dirname + '/views');
+app.engine('handlebars', exphbs({defaultLayout: 'main'}));
+app.set('view engine', 'handlebars');
+
+console.log(__dirname)
 
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({extended: false}))
 
 var url = 'mongodb://localhost:27017/myproject';
 var db;
+var randomHard;
 
 MongoClient.connect(url, (err, database) => {
   if (err) return console.log(err)
@@ -18,11 +29,29 @@ MongoClient.connect(url, (err, database) => {
     });
 });
 
-// app.get('/hardware/random', function(req, res) {
-//   var id = Math.floor(Math.random() * hardware.length);
-//   var q = hardware[id];
-//   res.json(q);
-// });
+// HOME
+
+app.get('/', function(req, res){
+    db.collection('hardware').count(function(err, totalinDb) {
+      var randomNum = Math.floor((Math.random() * totalinDb) + 1);
+      console.log(randomNum)
+
+      db.collection('hardware').distinct("name",{ "status": false }, function(err,names){
+        db.collection('hardware').find().skip(randomNum - 1).limit(-1).next(function(err,random) {
+          // console.log(docs)
+          renderHome(res, names, random.name);
+        });
+      });
+      function renderHome(res, names, itemName) {
+        console.log(names);
+        res.render('home', {
+              renderHardware: itemName,
+              availableHardware: names
+          });
+      }
+    });
+});
+
 
 // HARDWARE (ALL) END POINT
 // Get all hardware, available or not
@@ -178,3 +207,9 @@ app.route('/hardware/status/:id')
       res.send(item);
     });
   })
+
+// app.get('/hardware/random', function(req, res) {
+//   var id = Math.floor(Math.random() * hardware.length);
+//   var q = hardware[id];
+//   res.json(q);
+// });

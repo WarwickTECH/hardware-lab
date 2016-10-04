@@ -1,0 +1,228 @@
+<body id="top" class="scrollspy">
+
+    <!-- Pre Loader -->
+    <div id="loader-wrapper">
+        <div id="loader"></div>
+
+        <div class="loader-section section-left"></div>
+        <div class="loader-section section-right"></div>
+
+    </div>
+
+    <!--Navigation-->
+    <div class="navbar-fixed">
+        <nav id="nav_f" class="default_color" role="navigation">
+            <div class="container">
+                <div class="nav-wrapper">
+                    <a href="#" id="logo-container" class="brand-logo">Hardware Lab</a>
+                    <ul class="right hide-on-med-and-down">
+                        <li><a href="#about">About</a></li>
+                        <li><a href="#api">API</a></li>
+                        <li><a href="#contact">Contact</a></li>
+                    </ul>
+                    <ul id="nav-mobile" class="side-nav">
+                        <li><a href="#about">About</a></li>
+                        <li><a href="#api">API</a></li>
+                        <li><a href="#contact">Contact</a></li>
+                    </ul>
+                    <a href="#" data-activates="nav-mobile" class="button-collapse"><i class="mdi-navigation-menu"></i></a>
+                </div>
+            </div>
+        </nav>
+    </div>
+
+    <!--Hero-->
+    <div class="section no-pad-bot" id="index-banner">
+        <div class="container">
+            <h1 class="text_h center header cd-headline letters type">
+            <span>Do you want to</span>
+            <span class="cd-words-wrapper waiting">
+                <b class="is-visible">build</b>
+                <b>code</b>
+                <b>learn</b>
+                <b>share</b>
+                <b>3D print</b>
+            </span>
+            <span>?</span>
+        </h1>
+        </div>
+    </div>
+
+    <!--Intro and service-->
+    <div id="about" class="section scrollspy">
+        <div class="container">
+            <div class="row">
+                <div class="col s12">
+                    <h2 class="center header text_h2">Want to build with some of the latest and greatest tech? Can't afford to buy that shiny new <span class="span_h2">{{renderHardware}}</span>?</h2>
+                </div>
+
+                <div class="col s12 m4 l4">
+                    <div class="center promo promo-example">
+                        <i class="material-icons">memory</i>
+                        <h5 class="promo-caption">Tons of Hardware</h5>
+                        <p class="light center">Our hardware lab is stocked with some of the latest and greatest technology available. We want students to take their learning beyond their degrees and experiment with modern hardware.</p>
+                    </div>
+                </div>
+                <div class="col s12 m4 l4">
+                    <div class="center promo promo-example">
+                        <i class="material-icons">money_off</i>
+                        <h5 class="promo-caption">No Charge</h5>
+                        <p class="light center">There's no hidden fees here. What you see is what you get! Borrow any hardware you like by simply registering with student ID and @warwick.ac.uk email address and selecting what you want to borrow!</p>
+                    </div>
+                </div>
+                <div class="col s12 m4 l4">
+                    <div class="center promo promo-example">
+                        <i class="material-icons">code</i>
+                        <h5 class="promo-caption">The API</h5>
+                        <p class="light center">We've even rolled up a simple API that you can use to check and see what hardware is available! Find out what's been borrowed, get documentation and even request hardware! Find out more <a href="#api" class="text_b">below</a>!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--Work-->
+    <div class="section scrollspy" id="lab">
+        <div class="container">
+            <h2 class="header text_b">The Lab </h2>
+            <div class="row">
+                <div class="input-field col s4">
+                    <input id="email" type="text" class="validate">
+                    <label for="email" data-error="Invalid Warwick Email" data-success="Valid">Email</label>
+                </div>
+                <div class="input-field col s4">
+                    <input id="id" type="text" class="validate">
+                    <label for="id">Student ID</label>
+                </div>
+                <div class="input-field col s4" >
+                    <select id="hardwareDropdown" class="browser-default" >
+                        <option selected="true" disabled="disabled">Select Hardware</option>
+                        {{#each availableHardware as |item index|}}
+                        <option value={{index}}>{{item}}</option>
+                        {{/each}}
+                    </select>
+                </div>
+            </div>
+            <div class="row" style="text-align:center">
+                <button class="btn waves-effect waves-light" type="submit" name="action">Submit
+              <i class="material-icons right">send</i>
+            </button>
+            </div>
+            <div class="row" style="text-align:center">
+                <p>
+                    Please note, that when requesting hardware, you will be required to show student id when you come to collect your hardware. You will also be required to sign a waiver outlining the responsibilities you must abide whilst borrowing the kit.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!--Parallax-->
+    <div class="parallax-container">
+        <div class="parallax"><img src="img/hardware.png"></div>
+    </div>
+
+    <!--Team-->
+    <div class="section scrollspy" id="api">
+        <div class="container">
+            <h2 class="header text_b">The API </h2>
+            <div class="row" style="text-align:center">
+                <p>
+                    This is a list of the various end points available with the <a class="text_b">Hardware Lab</a> API. Click the request to expand for more detail and examples.
+                </p>
+            </div>
+            <div class="row">
+                <div class="col s12 m4 l4">
+                    <div class="center promo promo-example">
+                        <h5 class="promo-caption text_b">GET /hardware</h5>
+                        <ul>
+                            <li>
+                                Returns a list of all hardware.
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col s12 m4 l4">
+                    <div class="center promo promo-example">
+                        <h5 class="promo-caption text_b">GET /hardware?status=</h5>
+                        <ul>
+                            <li>
+                                Returns a list of all hardware currently available/unavailable (true || false).
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col s12 m4 l4">
+                    <div class="center promo promo-example">
+                        <h5 class="promo-caption text_b">POST /hardware/random</h5>
+                        <ul>
+                            <li>
+                                Returns a random hardware currently available in the Harware Lab.
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col s12 m4 l4">
+                        <div class="center promo promo-example">
+                            <h5 class="promo-caption text_b">POST /hardware/:id</h5>
+                            <ul>
+                                <li>
+                                    Request to borrow specifc hardware by id. Requires student id and email in payload.
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col s12 m4 l4">
+                        <div class="center promo promo-example">
+                            <h5 class="promo-caption text_b">GET /hardware/:id</h5>
+                            <ul>
+                                <li>
+                                    Returns info about a specific hardware by its id.
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col s12 m4 l4">
+                        <div class="center promo promo-example">
+                            <h5 class="promo-caption text_b">GET /hardware/:name</h5>
+                            <ul>
+                                <li>
+                                    Returns a list of all hardware of a specifc name, e.g. Arduino.
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                </div>
+                <!-- GET /hardware : Returns a list of all hardware
+            GET /hardware?status= : Returns all hardware by status (bool for borrowed/not borrowed)
+            POST /hardware : Add one new hardware
+            GET /hardware/:id : Returns hardware by id
+            DELETE /hardware/:id : Delete hardware by id
+            PUT /hardware/status/:id : Modify hardware status (for borrowed and returned hardware)
+            GET /hardware/:name : Returns all hardware by name (e.g. "Arduino") -->
+            </div>
+        </div>
+    </div>
+
+    <!--Footer-->
+    <footer id="contact" class="page-footer default_color scrollspy">
+        <div class="footer-copyright default_color">
+            <div class="container">
+                <div class="row">
+                    <div class="col s12 m6 l6">
+                        Made possible by <a class="white-text" href="http://warwick.tech">WarwickTECH.</a>
+                    </div>
+                    <div class="col s12 m6 l6" style="text-align:right">
+                        <i class="material-icons">email</i>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </footer>
+
+    <!--  Scripts-->
+    <script src="min/plugin-min.js"></script>
+    <script src="min/custom-min.js"></script>
+</body>
