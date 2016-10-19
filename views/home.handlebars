@@ -86,15 +86,20 @@
         <div class="container">
             <h2 class="header text_b">The Lab </h2>
             <div class="row">
-                <div class="input-field col s4">
+                <p class="light center">
+                    Enter your Warwick Student ID, Email Address and select the hardware you wish to request. Shortly after you've pressed submit, you'll get an email confirming the hardware you selected.
+                </p>
+            </div>
+            <div class="row">
+                <div class="input-field col s12 m4 l4">
                     <input id="email" type="text" class="validate">
-                    <label for="email" data-error="Invalid Warwick Email" data-success="Valid">Email</label>
+                    <label for="email" data-error="Invalid Warwick Email" data-success="Valid">Warwick Email</label>
                 </div>
-                <div class="input-field col s4">
+                <div class="input-field col s12 m4 l4">
                     <input id="id" type="text" class="validate">
                     <label for="id">Student ID</label>
                 </div>
-                <div class="input-field col s4" >
+                <div class="input-field col s12 m4 l4" >
                     <select id="hardwareDropdown" class="browser-default" >
                         <option selected="true" disabled="disabled">Select Hardware</option>
                         {{#each availableHardware as |item index|}}
@@ -104,12 +109,12 @@
                 </div>
             </div>
             <div class="row" style="text-align:center">
-                <button class="btn waves-effect waves-light" type="submit" name="action">Submit
-              <i class="material-icons right">send</i>
-            </button>
+                <button class="btn waves-effect waves-light" onclick="Materialize.toast('Request Sent!', 4000)" type="submit" name="action">Submit
+                    <i class="material-icons right">send</i>
+                </button>
             </div>
             <div class="row" style="text-align:center">
-                <p>
+                <p class="light center">
                     Please note, that when requesting hardware, you will be required to show student id when you come to collect your hardware. You will also be required to sign a waiver outlining the responsibilities you must abide whilst borrowing the kit.
                 </p>
             </div>
