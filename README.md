@@ -1,7 +1,7 @@
 ## Hardware Lab
 Website/API for managing hardware, tech and kit within the DCS store.
 
-<p align="center"><img src ="https://raw.githubusercontent.com/Bucknalla/hardware-lab/master/assets/github/readme.gif" width="900"></p>
+<p align="center"><img src ="https://raw.githubusercontent.com/WarwickTECH/hardware-lab/master/assets/github/readme.gif" width="900"></p>
 
 #### API
 The API endpoints will be declared once they are complete.
