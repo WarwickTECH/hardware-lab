@@ -34,8 +34,6 @@ MongoClient.connect(url, (err, database) => {
 app.get('/', function(req, res){
     db.collection('hardware').count(function(err, totalinDb) {
       var randomNum = Math.floor((Math.random() * totalinDb) + 1);
-      console.log(randomNum)
-
       db.collection('hardware').distinct("name",{ "status": false }, function(err,names){
         db.collection('hardware').find().skip(randomNum - 1).limit(-1).next(function(err,random) {
           // console.log(docs)
@@ -58,7 +56,9 @@ app.get('/', function(req, res){
 
 app.route('/hardware')
   .get(function(req, res) {
-    console.log(req.query.status)
+	if(req.query.status != null){
+		console.log(req.query.status);
+	}
     if(req.query.status == 'true') {
       console.log('trigger')
       db.collection('hardware').find({status : true}).toArray(function(err, docs) {
@@ -155,7 +155,7 @@ app.get('/hardware/name/:name', function(req, res) {
 app.route('/hardware/status/:id')
   .get(function(req, res) {
     if(req.params.id < 0) {
-      res.statusCode = 404;
+      res.statusCode = 400;
       return res.send('ERROR 400 - No id referenced');
     }
     console.log(req.params.id)
@@ -201,8 +201,8 @@ app.route('/hardware/status/:id')
 
     db.collection('hardware').findAndModify({'_id': new ObjectId(req.params.id)}, [], { $set: {"status": isTrueSet, "studentId": emailStudent, "studentEmail": idStudent, "dateLoaned": dateLoaned} }, { new : true}, function(err, item) {
       if(item == null){
-        res.statusCode = 404;
-        return res.send('ERROR 404 - No hardware with id found in db');
+        res.statusCode = 400;
+        return res.send('ERROR 400 - No hardware with id found in db');
       };
       res.send(item);
     });
